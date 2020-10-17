@@ -1,0 +1,24 @@
+<html>
+<head>
+<script type="text/javascript" src="CcResizeComponent.js"></script>
+</head>
+<body>
+<img style="position:absolute;top:20px;left:20px;width:400px;height:40px;" src="https://brickwedde.engineer/skyline.png">
+
+<script type="text/javascript">
+var img = document.querySelector("img");
+
+img.addEventListener("click", (e) => {
+  var resizer = new CcResizeComponent(img);
+  resizer.addEventListener("resized", (e) => {
+    console.log(e.detail);
+    img.style.top = e.detail.top + "px";
+    img.style.left = e.detail.left + "px";
+    img.style.width = e.detail.width + "px";
+    img.style.height = e.detail.height + "px";
+  });
+});
+
+</script>
+</body>
+</html>
