@@ -1,7 +1,8 @@
 class CcResizeComponent extends HTMLElement {
-  constructor(component) {
+  constructor(component, modal) {
     super();
     this.component = component;
+    this.modal = modal;
     document.body.appendChild(this);
   }
 
@@ -16,76 +17,43 @@ class CcResizeComponent extends HTMLElement {
     this.componentOffsetTop = this.component.offsetTop;
     this.componentOffsetLeft = this.component.offsetLeft;
 
-    this.style.top = "0px";
-    this.style.left = "0px";
-    this.style.bottom = "0px";
-    this.style.right = "0px";
+    if (this.modal) {
+      this.style.boxSizing = "border-box";
+      this.style.top = "0px";
+      this.style.left = "0px";
+      this.style.bottom = "0px";
+      this.style.right = "0px";
+      this.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    } else {
+      this.style.boxSizing = "border-box";
+      this.style.top = (this.top - 20) + "px";
+      this.style.left = (this.left - 20) + "px";
+      this.style.width = (this.width + 40) + "px";
+      this.style.height = (this.height + 40) + "px";
+    }
     this.style.position = "absolute";
-    this.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
     this.style.zIndex = 99999;
 
     this.movestart = null;
 
-    this.addEventListener('mousemove', (e) => {
-      if (this.movestart) {
-        switch (this.movestart.pos) {
-          case "br":
-            this.height += e.clientY - this.movestart.y;
-            this.width += e.clientX - this.movestart.x;
-            break;
-          case "tl":
-            this.componentOffsetTop += e.clientY - this.movestart.y;
-            this.top += e.clientY - this.movestart.y;
-            this.componentOffsetLeft += e.clientX - this.movestart.x;
-            this.left += e.clientX - this.movestart.x;
-            this.height -= e.clientY - this.movestart.y;
-            this.width -= e.clientX - this.movestart.x;
-            break;
-          case "tr":
-            this.componentOffsetTop += e.clientY - this.movestart.y;
-            this.top += e.clientY - this.movestart.y;
-            this.height -= e.clientY - this.movestart.y;
-            this.width += e.clientX - this.movestart.x;
-            break;
-          case "bl":
-            this.componentOffsetLeft += e.clientX - this.movestart.x;
-            this.left += e.clientX - this.movestart.x;
-            this.width -= e.clientX - this.movestart.x;
-            this.height += e.clientY - this.movestart.y;
-            break;
-          case "m":
-            this.componentOffsetTop += e.clientY - this.movestart.y;
-            this.top += e.clientY - this.movestart.y;
-            this.componentOffsetLeft += e.clientX - this.movestart.x;
-            this.left += e.clientX - this.movestart.x;
-            break;
+    this.addEventListener('mousemove', this.mousemove, false);
+
+    this.addEventListener('mouseup', this.mouseup, false);
+
+    if (this.modal) {
+      this.addEventListener("mousedown", (e) => {
+        if (e.button != 0) {
+          return;
         }
-        this.movestart.x = e.clientX;
-        this.movestart.y = e.clientY;
-
-        this.resizeborder();
-        this.dispatchEvent(new CustomEvent("resized", {detail: {top: this.componentOffsetTop, left: this.componentOffsetLeft, width: this.width, height: this.height}}));
-      }
-    }, false);
-
-    this.addEventListener('mouseup', (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.movestart = null;
-    }, false);
-
-    this.addEventListener("mousedown", (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.parentElement.removeChild(this);
-    });
+        this.parentElement.removeChild(this);
+      });
+    }
 
     this.border = document.createElement("div");
     this.border.style.border = "1px dashed red";
     this.border.style.position = "absolute";
     this.border.style.cursor = "move";
+    this.border.style.boxSizing = "border-box";
     this.resizeborder();
     this.appendChild(this.border);
 
@@ -183,11 +151,75 @@ class CcResizeComponent extends HTMLElement {
     this.border.appendChild(this.bottomleft);
   }
 
+  disconnectedCallback() {
+    this.removeEventListener('mousemove', this.mousemove);
+  }
+
+  mouseup (e) {
+    if (e.button != 0) {
+      return;
+    }
+    this.movestart = null;
+  }
+
+  mousemove (e) {
+    if (this.movestart) {
+      switch (this.movestart.pos) {
+        case "br":
+          this.height += e.clientY - this.movestart.y;
+          this.width += e.clientX - this.movestart.x;
+          break;
+        case "tl":
+          this.componentOffsetTop += e.clientY - this.movestart.y;
+          this.top += e.clientY - this.movestart.y;
+          this.componentOffsetLeft += e.clientX - this.movestart.x;
+          this.left += e.clientX - this.movestart.x;
+          this.height -= e.clientY - this.movestart.y;
+          this.width -= e.clientX - this.movestart.x;
+          break;
+        case "tr":
+          this.componentOffsetTop += e.clientY - this.movestart.y;
+          this.top += e.clientY - this.movestart.y;
+          this.height -= e.clientY - this.movestart.y;
+          this.width += e.clientX - this.movestart.x;
+          break;
+        case "bl":
+          this.componentOffsetLeft += e.clientX - this.movestart.x;
+          this.left += e.clientX - this.movestart.x;
+          this.width -= e.clientX - this.movestart.x;
+          this.height += e.clientY - this.movestart.y;
+          break;
+        case "m":
+          this.componentOffsetTop += e.clientY - this.movestart.y;
+          this.top += e.clientY - this.movestart.y;
+          this.componentOffsetLeft += e.clientX - this.movestart.x;
+          this.left += e.clientX - this.movestart.x;
+          break;
+      }
+      this.movestart.x = e.clientX;
+      this.movestart.y = e.clientY;
+
+      this.resizeborder();
+      this.dispatchEvent(new CustomEvent("resized", {detail: {top: this.componentOffsetTop, left: this.componentOffsetLeft, width: this.width, height: this.height}}));
+    }
+  }
+
   resizeborder() {
-    this.border.style.top = this.top + "px";
-    this.border.style.left = this.left + "px";
-    this.border.style.width = this.width + "px";
-    this.border.style.height = this.height + "px";
+    if (this.modal) {
+      this.border.style.top = this.top + "px";
+      this.border.style.left = this.left + "px";
+      this.border.style.width = this.width + "px";
+      this.border.style.height = this.height + "px";
+    } else {
+      this.style.top = (this.top - 20) + "px";
+      this.style.left = (this.left - 20) + "px";
+      this.style.width = (this.width + 40) + "px";
+      this.style.height = (this.height + 40) + "px";
+      this.border.style.top = "20px";
+      this.border.style.left = "20px";
+      this.border.style.right = "20px";
+      this.border.style.bottom = "20px";
+    }
   }
 }
 
