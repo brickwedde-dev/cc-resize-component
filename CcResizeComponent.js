@@ -57,6 +57,17 @@ class CcResizeComponent extends HTMLElement {
     this.resizeborder();
     this.appendChild(this.border);
 
+    this.label = document.createElement("div");
+    this.label.style.bottom = "5px";
+    this.label.style.left = "5px";
+    this.label.style.right = "5px";
+    this.label.style.top = "5px";
+    this.label.style.position = "absolute";
+    this.label.style.color = "rgba(128, 128, 128, 0.9)";
+    this.label.style.overflow = "hidden";
+
+    this.border.appendChild(this.label);
+
     this.border.addEventListener("mousedown", (e) => {
       if (e.button != 0) {
         return;
@@ -149,6 +160,90 @@ class CcResizeComponent extends HTMLElement {
     });
 
     this.border.appendChild(this.bottomleft);
+
+    this.tophandle = document.createElement("div");
+    this.tophandle.style.top = "-5px";
+    this.tophandle.style.left = "calc(50% - 5px)";
+    this.tophandle.style.width = "10px";
+    this.tophandle.style.height = "10px";
+    this.tophandle.style.border = "1px solid #808080";
+    this.tophandle.style.backgroundColor = "#c0c0c0";
+    this.tophandle.style.position = "absolute";
+    this.tophandle.style.cursor = "ns-resize";
+
+    this.tophandle.addEventListener("mousedown", (e) => {
+      if (e.button != 0) {
+        return;
+      }
+      this.movestart = { x: e.clientX, y: e.clientY, pos: "t"};
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    this.border.appendChild(this.tophandle);
+
+    this.lefthandle = document.createElement("div");
+    this.lefthandle.style.top = "calc(50% - 5px)";
+    this.lefthandle.style.left = "-5px";
+    this.lefthandle.style.width = "10px";
+    this.lefthandle.style.height = "10px";
+    this.lefthandle.style.border = "1px solid #808080";
+    this.lefthandle.style.backgroundColor = "#c0c0c0";
+    this.lefthandle.style.position = "absolute";
+    this.lefthandle.style.cursor = "ew-resize";
+
+    this.lefthandle.addEventListener("mousedown", (e) => {
+      if (e.button != 0) {
+        return;
+      }
+      this.movestart = { x: e.clientX, y: e.clientY, pos: "l"};
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    this.border.appendChild(this.lefthandle);
+
+
+    this.bottomhandle = document.createElement("div");
+    this.bottomhandle.style.bottom = "-5px";
+    this.bottomhandle.style.left = "calc(50% - 5px)";
+    this.bottomhandle.style.width = "10px";
+    this.bottomhandle.style.height = "10px";
+    this.bottomhandle.style.border = "1px solid #808080";
+    this.bottomhandle.style.backgroundColor = "#c0c0c0";
+    this.bottomhandle.style.position = "absolute";
+    this.bottomhandle.style.cursor = "ns-resize";
+
+    this.bottomhandle.addEventListener("mousedown", (e) => {
+      if (e.button != 0) {
+        return;
+      }
+      this.movestart = { x: e.clientX, y: e.clientY, pos: "b"};
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    this.border.appendChild(this.bottomhandle);
+
+    this.righthandle = document.createElement("div");
+    this.righthandle.style.top = "calc(50% - 5px)";
+    this.righthandle.style.right = "-5px";
+    this.righthandle.style.width = "10px";
+    this.righthandle.style.height = "10px";
+    this.righthandle.style.border = "1px solid #808080";
+    this.righthandle.style.backgroundColor = "#c0c0c0";
+    this.righthandle.style.position = "absolute";
+    this.righthandle.style.cursor = "ew-resize";
+    this.righthandle.addEventListener("mousedown", (e) => {
+      if (e.button != 0) {
+        return;
+      }
+      this.movestart = { x: e.clientX, y: e.clientY, pos: "r"};
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    this.border.appendChild(this.righthandle);
   }
 
   disconnectedCallback() {
@@ -169,12 +264,28 @@ class CcResizeComponent extends HTMLElement {
           this.height += e.clientY - this.movestart.y;
           this.width += e.clientX - this.movestart.x;
           break;
+        case "r":
+          this.width += e.clientX - this.movestart.x;
+          break;
+        case "b":
+          this.height += e.clientY - this.movestart.y;
+          break;
         case "tl":
           this.componentOffsetTop += e.clientY - this.movestart.y;
           this.top += e.clientY - this.movestart.y;
           this.componentOffsetLeft += e.clientX - this.movestart.x;
           this.left += e.clientX - this.movestart.x;
           this.height -= e.clientY - this.movestart.y;
+          this.width -= e.clientX - this.movestart.x;
+          break;
+        case "t":
+          this.componentOffsetTop += e.clientY - this.movestart.y;
+          this.top += e.clientY - this.movestart.y;
+          this.height -= e.clientY - this.movestart.y;
+          break;
+        case "l":
+          this.componentOffsetLeft += e.clientX - this.movestart.x;
+          this.left += e.clientX - this.movestart.x;
           this.width -= e.clientX - this.movestart.x;
           break;
         case "tr":
@@ -219,6 +330,10 @@ class CcResizeComponent extends HTMLElement {
       this.border.style.left = "20px";
       this.border.style.right = "20px";
       this.border.style.bottom = "20px";
+    }
+
+    if (this.label) {
+      this.label.innerHTML = "Top:&nbsp;" + this.top + ", Left:&nbsp;" + this.left + "<br>Width:&nbsp;" + this.width + ", Height:&nbsp;" + this.height;
     }
   }
 }
