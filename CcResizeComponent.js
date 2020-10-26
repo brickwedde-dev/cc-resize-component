@@ -333,7 +333,7 @@ class CcResizeComponent extends HTMLElement {
     }
 
     if (this.label) {
-      this.label.innerHTML = "Top:&nbsp;" + this.top + ", Left:&nbsp;" + this.left + "<br>Width:&nbsp;" + this.width + ", Height:&nbsp;" + this.height;
+      this.label.innerHTML = "Top:&nbsp;" + this.componentOffsetTop + ", Left:&nbsp;" + this.componentOffsetLeft + "<br>Width:&nbsp;" + this.width + ", Height:&nbsp;" + this.height;
     }
   }
 }
