@@ -3,6 +3,10 @@ class CcResizeComponent extends HTMLElement {
     super();
     this.component = component;
     this.modal = modal;
+    
+    this.mousemove = this.mousemove.bind(this);
+    this.mouseup = this.mouseup.bind(this);
+
     document.body.appendChild(this);
   }
 
@@ -26,19 +30,18 @@ class CcResizeComponent extends HTMLElement {
       this.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
     } else {
       this.style.boxSizing = "border-box";
-      this.style.top = (this.top - 20) + "px";
-      this.style.left = (this.left - 20) + "px";
-      this.style.width = (this.width + 40) + "px";
-      this.style.height = (this.height + 40) + "px";
+      this.style.top = (this.top) + "px";
+      this.style.left = (this.left) + "px";
+      this.style.width = (this.width) + "px";
+      this.style.height = (this.height) + "px";
     }
     this.style.position = "absolute";
     this.style.zIndex = 99999;
 
     this.movestart = null;
 
-    this.addEventListener('mousemove', this.mousemove, false);
-
-    this.addEventListener('mouseup', this.mouseup, false);
+    document.addEventListener('mousemove', this.mousemove, false);
+    document.addEventListener('mouseup', this.mouseup, false);
 
     if (this.modal) {
       this.addEventListener("mousedown", (e) => {
@@ -247,7 +250,8 @@ class CcResizeComponent extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.removeEventListener('mousemove', this.mousemove);
+    document.removeEventListener('mousemove', this.mousemove);
+    document.removeEventListener('mouseup', this.mouseup);
   }
 
   mouseup (e) {
