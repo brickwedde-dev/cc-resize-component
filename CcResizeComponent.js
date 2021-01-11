@@ -296,6 +296,9 @@ class CcResizeComponent extends HTMLElement {
     if (e.button != 0) {
       return;
     }
+    if (this.movestart) {
+      this.dispatchEvent(new CustomEvent("finished", {detail: {}}));
+    }
     this.movestart = null;
   }
 
