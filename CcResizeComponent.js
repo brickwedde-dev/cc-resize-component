@@ -12,7 +12,7 @@ class CcResizeComponent extends HTMLElement {
     document.body.appendChild(this);
   }
 
-  connectedCallback() {
+  reapplyComponentCoords() {
     var coord = getCoords (this.component);
     
     this.top = coord.top;
@@ -22,6 +22,15 @@ class CcResizeComponent extends HTMLElement {
 
     this.componentOffsetTop = coord.top - this.component.offsetTop;
     this.componentOffsetLeft = coord.left - this.component.offsetLeft;
+
+    this.resizeborder();
+  }
+
+  connectedCallback() {
+    this.reapplyComponentCoords();
+    
+    this.style.position = "absolute";
+    this.style.zIndex = 99999;
 
     if (this.modal) {
       this.style.boxSizing = "border-box";
@@ -37,8 +46,6 @@ class CcResizeComponent extends HTMLElement {
       this.style.width = (this.width) + "px";
       this.style.height = (this.height) + "px";
     }
-    this.style.position = "absolute";
-    this.style.zIndex = 99999;
 
     this.movestart = null;
 
@@ -353,6 +360,9 @@ class CcResizeComponent extends HTMLElement {
   }
 
   resizeborder() {
+    if (!this.border) {
+      return;
+    }
     if (this.modal) {
       this.border.style.top = this.top + "px";
       this.border.style.left = this.left + "px";
