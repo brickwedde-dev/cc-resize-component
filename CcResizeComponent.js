@@ -1,5 +1,5 @@
 class CcResizeComponent extends HTMLElement {
-  constructor(component, modal) {
+  constructor(component, modal, parent, relative) {
     super();
     this.component = component;
     this.modal = modal;
@@ -9,11 +9,14 @@ class CcResizeComponent extends HTMLElement {
     this.mousemove = this.mousemove.bind(this);
     this.mouseup = this.mouseup.bind(this);
 
-    document.body.appendChild(this);
+    this.relative = relative;
+
+    this.parent = parent || document.body;
+    this.parent.appendChild(this);
   }
 
   reapplyComponentCoords() {
-    var coord = getCoords (this.component);
+    var coord = getCoordsSimple (this.component, this.parent, this.relative);
     
     this.top = coord.top;
     this.left = coord.left;
@@ -402,6 +405,15 @@ function getCoords(elem) { // crossbrowser version
   var top  = box.top +  scrollTop - clientTop;
   var left = box.left + scrollLeft - clientLeft;
 
+  return { top: Math.round(top), left: Math.round(left) };
+}
+
+function getCoordsSimple(elem, parent, relative) {
+  if (parent == document.body || !relative) {
+    return getCoords(elem);
+  }
+  var top  = elem.offsetTop + relative.offsetTop;
+  var left = elem.offsetLeft + relative.offsetLeft;
   return { top: Math.round(top), left: Math.round(left) };
 }
 
