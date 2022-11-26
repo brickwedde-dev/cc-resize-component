@@ -19,10 +19,14 @@ class CcDivider extends HTMLElement {
 
     this.mousemove = this.mousemove.bind(this);
     this.mouseup = this.mouseup.bind(this);
-    this.resizehandler = this.resizehandler.bind(this);
 
     this.divider = null;
     this.dividerCounter = g_CcDividerCounter++;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      this.resizehandler();
+    });
+    resizeObserver.observe(this);
   }
 
   connectedCallback() {
@@ -33,7 +37,6 @@ class CcDivider extends HTMLElement {
 
     document.addEventListener('mousemove', this.mousemove, false);
     document.addEventListener('mouseup', this.mouseup, false);
-    document.addEventListener('cc-divider-resize', this.resizehandler, false);
 
     if (this.getAttribute("horizontal") === "true") {
       this.horizontal = true;
@@ -48,40 +51,34 @@ class CcDivider extends HTMLElement {
     } else if (this.getAttribute("vertical") !== null ) {
       this.horizontal = false;
     }
-
-    setTimeout(() => {
-      this.refresh(true/*mayFireEvent*/);
-    }, 1);
   }
 
   disconnectedCallback() {
     document.removeEventListener('mousemove', this.mousemove);
     document.removeEventListener('mouseup', this.mouseup);
-    document.removeEventListener('cc-divider-resize', this.resizehandler, false);
   }
 
-  refresh(mayFireEvent) {
-    if (this.offsetHeight == 0 && this.offsetWidth == 0) {
-      return;
-    }
-
+  newSize(size1, size2) {
     var oldsize1 = this.size1;
     var oldsize2 = this.size2;
 
-    if (this.size1 == -1) {
-      if (this.horizontal) {
-        this.size1 = parseInt((this.offsetHeight - this.dividerSize) / 2);
-        this.size2 = this.offsetHeight - (this.size1 + this.dividerSize)
-      } else {
-        this.size1 = parseInt((this.offsetWidth - this.dividerSize) / 2);
-        this.size2 = this.offsetWidth - (this.size1 + this.dividerSize)
-      }
-      this.fixSizes();
+    this.size1 = size1;
+    this.size2 = size2;
+
+    this.fixSizes();
+
+    this.refresh();
+
+    if (oldsize1 != this.size1 || oldsize2 != this.size2) {
+      setTimeout(() => {
+        this.dispatchEvent(new CustomEvent("resized", {detail: {size1: this.size1, size2: this.size2}}));
+        document.dispatchEvent(new CustomEvent("cc-divider-resize", {detail: {size1: this.size1, size2: this.size2, dividerCounter: this.dividerCounter}}));
+      }, 1);
     }
+  }
+
+  refresh() {
     if (!this.divider) {
-      oldsize1 = "x";
-      oldsize2 = "y";
-      
       for(var i = this.childNodes.length - 1; i >= 0; i--) {
         if (this.childNodes[i].nodeName == "#text") {
           this.removeChild(this.childNodes[i]);
@@ -156,23 +153,22 @@ class CcDivider extends HTMLElement {
       this.childNodes[1].style.bottom = "0px";
       this.childNodes[1].style.width = (this.size2) + "px";
     }
+  }
 
-    if(mayFireEvent && (oldsize1 != this.size1 || oldsize2 != this.size2)) {
+  resizehandler () {
+    var oldsize1 = this.size1;
+    var oldsize2 = this.size2;
+
+    this.fixSizes();
+
+    this.refresh();
+
+    if (oldsize1 != this.size1 || oldsize2 != this.size2) {
       setTimeout(() => {
         this.dispatchEvent(new CustomEvent("resized", {detail: {size1: this.size1, size2: this.size2}}));
         document.dispatchEvent(new CustomEvent("cc-divider-resize", {detail: {size1: this.size1, size2: this.size2, dividerCounter: this.dividerCounter}}));
       }, 1);
-    } else {
-      console.log(1)
     }
-  }
-
-  resizehandler (e) {
-    if (e.detail.dividerCounter == this.dividerCounter) {
-      return;
-    }
-    this.fixSizes();
-    this.refresh(false/*mayFireEvent*/);
   }
 
   mouseup (e) {
@@ -188,22 +184,26 @@ class CcDivider extends HTMLElement {
   mousemove (e) {
     if (this.movestart) {
       if (this.horizontal) {
-        this.size1 = this.origsize1 + (e.clientY - this.movestart.y);
-        this.size2 = this.offsetHeight - (this.size1 + this.dividerSize)
+        this.newSize (this.origsize1 + (e.clientY - this.movestart.y), this.offsetHeight - (this.size1 + this.dividerSize));
       } else {
-        this.size1 = this.origsize1 + (e.clientX - this.movestart.x);
-        this.size2 = this.offsetWidth - (this.size1 + this.dividerSize)
+        this.newSize (this.origsize1 + (e.clientX - this.movestart.x), this.offsetWidth - (this.size1 + this.dividerSize));
       }
-
-      this.fixSizes();
-
-      this.refresh(true/*mayFireEvent*/);
-//      this.dispatchEvent(new CustomEvent("resized", {detail: {size1: this.size1, size2: this.size2}}));
-//      document.dispatchEvent(new CustomEvent("cc-divider-resize", {detail: {size1: this.size1, size2: this.size2, dividerCounter: this.dividerCounter}}));
     }
   }
 
   fixSizes() {
+    if (this.size1 == -1) {
+      if (this.isConnected) {
+        if (this.horizontal) {
+          this.newSize(parseInt((this.offsetHeight - this.dividerSize) / 2), this.offsetHeight - (this.size1 + this.dividerSize))
+        } else {
+          this.newSize (parseInt((this.offsetWidth - this.dividerSize) / 2), this.offsetWidth - (this.size1 + this.dividerSize));
+        }
+      } else {
+        return;
+      }
+    }
+
     var max = this.horizontal ? this.offsetHeight : this.offsetWidth;
 
     if (this.size2 < this.minSize2) {
