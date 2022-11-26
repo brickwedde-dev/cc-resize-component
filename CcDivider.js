@@ -15,7 +15,7 @@ class CcDivider extends HTMLElement {
     this.dividerImage = null;
 
     this.size1 = -1;
-
+    this.size2 = -1;
 
     this.mousemove = this.mousemove.bind(this);
     this.mouseup = this.mouseup.bind(this);
@@ -50,7 +50,7 @@ class CcDivider extends HTMLElement {
     }
 
     setTimeout(() => {
-      this.refresh();
+      this.refresh(true/*mayFireEvent*/);
     }, 1);
   }
 
@@ -60,7 +60,14 @@ class CcDivider extends HTMLElement {
     document.removeEventListener('cc-divider-resize', this.resizehandler, false);
   }
 
-  refresh() {
+  refresh(mayFireEvent) {
+    if (this.offsetHeight == 0 && this.offsetWidth == 0) {
+      return;
+    }
+
+    var oldsize1 = this.size1;
+    var oldsize2 = this.size2;
+
     if (this.size1 == -1) {
       if (this.horizontal) {
         this.size1 = parseInt((this.offsetHeight - this.dividerSize) / 2);
@@ -72,6 +79,9 @@ class CcDivider extends HTMLElement {
       this.fixSizes();
     }
     if (!this.divider) {
+      oldsize1 = "x";
+      oldsize2 = "y";
+      
       for(var i = this.childNodes.length - 1; i >= 0; i--) {
         if (this.childNodes[i].nodeName == "#text") {
           this.removeChild(this.childNodes[i]);
@@ -146,6 +156,15 @@ class CcDivider extends HTMLElement {
       this.childNodes[1].style.bottom = "0px";
       this.childNodes[1].style.width = (this.size2) + "px";
     }
+
+    if(mayFireEvent && (oldsize1 != this.size1 || oldsize2 != this.size2)) {
+      setTimeout(() => {
+        this.dispatchEvent(new CustomEvent("resized", {detail: {size1: this.size1, size2: this.size2}}));
+        document.dispatchEvent(new CustomEvent("cc-divider-resize", {detail: {size1: this.size1, size2: this.size2, dividerCounter: this.dividerCounter}}));
+      }, 1);
+    } else {
+      console.log(1)
+    }
   }
 
   resizehandler (e) {
@@ -153,7 +172,7 @@ class CcDivider extends HTMLElement {
       return;
     }
     this.fixSizes();
-    this.refresh();
+    this.refresh(false/*mayFireEvent*/);
   }
 
   mouseup (e) {
@@ -178,9 +197,9 @@ class CcDivider extends HTMLElement {
 
       this.fixSizes();
 
-      this.refresh();
-      this.dispatchEvent(new CustomEvent("resized", {detail: {size1: this.size1, size2: this.size2}}));
-      document.dispatchEvent(new CustomEvent("cc-divider-resize", {detail: {size1: this.size1, size2: this.size2, dividerCounter: this.dividerCounter}}));
+      this.refresh(true/*mayFireEvent*/);
+//      this.dispatchEvent(new CustomEvent("resized", {detail: {size1: this.size1, size2: this.size2}}));
+//      document.dispatchEvent(new CustomEvent("cc-divider-resize", {detail: {size1: this.size1, size2: this.size2, dividerCounter: this.dividerCounter}}));
     }
   }
 
