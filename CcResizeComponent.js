@@ -1,10 +1,12 @@
 class CcResizeComponent extends HTMLElement {
-  constructor(component, modal, parent, relative) {
+  constructor(component, modal, parent, relative, minwidth, minheight) {
     super();
     this.component = component;
     this.modal = modal;
     
     this.raster = {x : 1, y: 1};
+    this.minwidth = minwidth;
+    this.minheight = minheight;
 
     this.mousemove = this.mousemove.bind(this);
     this.mouseup = this.mouseup.bind(this);
@@ -353,6 +355,13 @@ class CcResizeComponent extends HTMLElement {
           this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
           this.left = rasterize(this.origleft + (e.clientX - this.movestart.x), this.raster.x, 0 - this.componentOffsetLeft);
           break;
+      }
+
+      if (isDefined(this.minwidth) && this.width < this.minwidth) {
+        this.width = this.minwidth;
+      }
+      if (isDefined(this.minheight) && this.height < this.minheight) {
+        this.height = this.minheight;
       }
       // this.movestart.x = e.clientX;
       // this.movestart.y = e.clientY;
