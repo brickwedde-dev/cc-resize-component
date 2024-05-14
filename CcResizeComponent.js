@@ -1,5 +1,5 @@
 class CcResizeComponent extends HTMLElement {
-  constructor(component, modal, parent, relative, minwidth, minheight, itemDefinition) {
+  constructor(component, modal, parent, relative, minwidth, minheight, maxscreen) {
     super();
     this.component = component;
     this.modal = modal;
@@ -13,7 +13,7 @@ class CcResizeComponent extends HTMLElement {
 
     this.relative = relative;
 
-    this.itemDefinition = itemDefinition;
+    this.maxscreen = maxscreen;
 
     this.parent = parent || document.body;
     this.parent.appendChild(this);
@@ -322,8 +322,8 @@ class CcResizeComponent extends HTMLElement {
         case "br":
           this.height = rasterize(this.origheight + (e.clientY - this.movestart.y), this.raster.y, this.top - this.componentOffsetTop);
           this.width = rasterize(this.origwidth + (e.clientX - this.movestart.x), this.raster.x, this.left - this.componentOffsetLeft);
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
-            var z1 = this.itemDefinition.width.maxscreen.width - this.left;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.width - this.left;
             if (this.width > z1 + this.componentOffsetLeft) {
               this.width = z1 + this.componentOffsetLeft;
             }
@@ -331,8 +331,8 @@ class CcResizeComponent extends HTMLElement {
           if (this.width < 0) {
             this.width = 0;
           }
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
-            var z1 = this.itemDefinition.height.maxscreen.height - this.top;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.height - this.top;
             if (this.height > z1 + this.componentOffsetTop) {
               this.height = z1 + this.componentOffsetTop;
             }
@@ -343,8 +343,8 @@ class CcResizeComponent extends HTMLElement {
           break;
         case "r":
           this.width = rasterize(this.origwidth + (e.clientX - this.movestart.x), this.raster.x, this.left - this.componentOffsetLeft);
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
-            var z1 = this.itemDefinition.width.maxscreen.width - this.left;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.width - this.left;
             if (this.width > z1 + this.componentOffsetLeft) {
               this.width = z1 + this.componentOffsetLeft;
             }
@@ -355,8 +355,8 @@ class CcResizeComponent extends HTMLElement {
           break;
         case "b":
           this.height = rasterize(this.origheight + (e.clientY - this.movestart.y), this.raster.y, this.top - this.componentOffsetTop);
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
-            var z1 = this.itemDefinition.height.maxscreen.height - this.top;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.height - this.top;
             if (this.height > z1 + this.componentOffsetTop) {
               this.height = z1 + this.componentOffsetTop;
             }
@@ -369,13 +369,13 @@ class CcResizeComponent extends HTMLElement {
           this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
           this.left = rasterize(this.origleft + (e.clientX - this.movestart.x), this.raster.x, 0 - this.componentOffsetLeft);
 
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
+          if (this.maxscreen) {
             if (this.left < this.componentOffsetLeft) {
               this.left = this.componentOffsetLeft;
             }
           }
 
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
+          if (this.maxscreen) {
             if (this.top < this.componentOffsetTop) {
               this.top = this.componentOffsetTop;
             }
@@ -390,8 +390,8 @@ class CcResizeComponent extends HTMLElement {
             this.width = 0;
           }
 
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
-            var z1 = this.itemDefinition.width.maxscreen.width - this.width;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.width - this.width;
             if (this.left > z1 + this.componentOffsetLeft) {
               this.left = z1 + this.componentOffsetLeft;
               this.width = this.origwidth - (this.left - this.origleft);
@@ -401,8 +401,8 @@ class CcResizeComponent extends HTMLElement {
             }
           }
 
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
-            var z1 = this.itemDefinition.width.maxscreen.height - this.height;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.height - this.height;
             if (this.top > z1 + this.componentOffsetTop) {
               this.top = z1 + this.componentOffsetTop;
               this.height = this.origheight - (this.top - this.origtop);
@@ -415,7 +415,7 @@ class CcResizeComponent extends HTMLElement {
 
         case "t":
           this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
+          if (this.maxscreen) {
             if (this.top < this.componentOffsetTop) {
               this.top = this.componentOffsetTop;
             }
@@ -426,8 +426,8 @@ class CcResizeComponent extends HTMLElement {
             this.height = 0;
           }
 
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
-            var z1 = this.itemDefinition.width.maxscreen.height - this.height;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.height - this.height;
             if (this.top > z1 + this.componentOffsetTop) {
               this.top = z1 + this.componentOffsetTop;
               this.height = this.origheight - (this.top - this.origtop);
@@ -439,7 +439,7 @@ class CcResizeComponent extends HTMLElement {
           break;
         case "l":
           this.left = rasterize(this.origleft + (e.clientX - this.movestart.x), this.raster.x, 0 - this.componentOffsetLeft);
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
+          if (this.maxscreen) {
             if (this.left < this.componentOffsetLeft) {
               this.left = this.componentOffsetLeft;
             }
@@ -448,8 +448,8 @@ class CcResizeComponent extends HTMLElement {
           if (this.width < 0) {
             this.width = 0;
           }
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
-            var z1 = this.itemDefinition.width.maxscreen.width - this.width;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.width - this.width;
             if (this.left > z1 + this.componentOffsetLeft) {
               this.left = z1 + this.componentOffsetLeft;
               this.width = this.origwidth - (this.left - this.origleft);
@@ -461,7 +461,7 @@ class CcResizeComponent extends HTMLElement {
           break;
         case "tr":
           this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
+          if (this.maxscreen) {
             if (this.top < this.componentOffsetTop) {
               this.top = this.componentOffsetTop;
             }
@@ -470,8 +470,8 @@ class CcResizeComponent extends HTMLElement {
           if (this.height < 0) {
             this.height = 0;
           }
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
-            var z1 = this.itemDefinition.width.maxscreen.height - this.height;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.height - this.height;
             if (this.top > z1 + this.componentOffsetTop) {
               this.top = z1 + this.componentOffsetTop;
               this.height = this.origheight - (this.top - this.origtop);
@@ -481,8 +481,8 @@ class CcResizeComponent extends HTMLElement {
             }
           }
           this.width = rasterize(this.origwidth + (e.clientX - this.movestart.x), this.raster.x, this.left - this.componentOffsetLeft);
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
-            var z1 = this.itemDefinition.width.maxscreen.width - this.left;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.width - this.left;
             if (this.width > z1 + this.componentOffsetLeft) {
               this.width = z1 + this.componentOffsetLeft;
             }
@@ -493,7 +493,7 @@ class CcResizeComponent extends HTMLElement {
           break;
         case "bl":
           this.left = rasterize(this.origleft + (e.clientX - this.movestart.x), this.raster.x, 0 - this.componentOffsetLeft);
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
+          if (this.maxscreen) {
             if (this.left < this.componentOffsetLeft) {
               this.left = this.componentOffsetLeft;
             }
@@ -502,8 +502,8 @@ class CcResizeComponent extends HTMLElement {
           if (this.width < 0) {
             this.width = 0;
           }
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
-            var z1 = this.itemDefinition.width.maxscreen.width - this.width;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.width - this.width;
             if (this.left > z1 + this.componentOffsetLeft) {
               this.left = z1 + this.componentOffsetLeft;
               this.width = this.origwidth - (this.left - this.origleft);
@@ -513,8 +513,8 @@ class CcResizeComponent extends HTMLElement {
             }
           }
           this.height = rasterize(this.origheight + (e.clientY - this.movestart.y), this.raster.y, this.top - this.componentOffsetTop);
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
-            var z1 = this.itemDefinition.height.maxscreen.height - this.top;
+          if (this.maxscreen) {
+            var z1 = this.maxscreen.height - this.top;
             if (this.height > z1 + this.componentOffsetTop) {
               this.height = z1 + this.componentOffsetTop;
             }
@@ -525,21 +525,21 @@ class CcResizeComponent extends HTMLElement {
           break;
         case "m":
           this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
-          if (this.itemDefinition && this.itemDefinition.height && this.itemDefinition.height.maxscreen) {
+          if (this.maxscreen) {
             if (this.top < this.componentOffsetTop) {
               this.top = this.componentOffsetTop;
             }
-            var z1 = this.itemDefinition.width.maxscreen.height - this.height;
+            var z1 = this.maxscreen.height - this.height;
             if (this.top > z1 + this.componentOffsetTop) {
               this.top = z1 + this.componentOffsetTop;
             }
           }
           this.left = rasterize(this.origleft + (e.clientX - this.movestart.x), this.raster.x, 0 - this.componentOffsetLeft);
-          if (this.itemDefinition && this.itemDefinition.width && this.itemDefinition.width.maxscreen) {
+          if (this.maxscreen) {
             if (this.left < this.componentOffsetLeft) {
               this.left = this.componentOffsetLeft;
             }
-            var z1 = this.itemDefinition.width.maxscreen.width - this.width;
+            var z1 = this.maxscreen.width - this.width;
             if (this.left > z1 + this.componentOffsetLeft) {
               this.left = z1 + this.componentOffsetLeft;
             }
