@@ -1,9 +1,11 @@
 class CcResizeComponent extends HTMLElement {
-  constructor(component, modal, parent, relative, minwidth, minheight, maxscreen) {
+  constructor(component, modal, parent, relative, minwidth, minheight, maxscreen, zindex) {
     super();
     this.component = component;
     this.modal = modal;
     
+    this.zindex = zindex || 99999;
+
     this.raster = {x : 1, y: 1};
     this.minwidth = minwidth;
     this.minheight = minheight;
@@ -37,7 +39,7 @@ class CcResizeComponent extends HTMLElement {
     this.reapplyComponentCoords();
     
     this.style.position = "absolute";
-    this.style.zIndex = 99999;
+    this.style.zIndex = this.zindex;
 
     if (this.modal) {
       this.style.boxSizing = "border-box";
