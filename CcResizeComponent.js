@@ -1,6 +1,9 @@
 class CcResizeComponent extends HTMLElement {
-  constructor(component, modal, parent, relative, minwidth, minheight, maxscreen, zindex) {
+  constructor(component, modal, parent, relative, minwidth, minheight, maxscreen, zindex, options) {
     super();
+
+    this.options = options || {};
+
     this.component = component;
     this.modal = modal;
     
@@ -102,30 +105,32 @@ class CcResizeComponent extends HTMLElement {
       e.stopPropagation();
     });
 
-    this.bottomright = document.createElement("div");
-    this.bottomright.style.bottom = "-5px";
-    this.bottomright.style.right = "-5px";
-    this.bottomright.style.width = "10px";
-    this.bottomright.style.height = "10px";
-    this.bottomright.style.border = "1px solid #808080";
-    this.bottomright.style.backgroundColor = "#c0c0c0";
-    this.bottomright.style.position = "absolute";
-    this.bottomright.style.cursor = "nwse-resize";
+    if (!this.options.xyOnly) {
+      this.bottomright = document.createElement("div");
+      this.bottomright.style.bottom = "-5px";
+      this.bottomright.style.right = "-5px";
+      this.bottomright.style.width = "10px";
+      this.bottomright.style.height = "10px";
+      this.bottomright.style.border = "1px solid #808080";
+      this.bottomright.style.backgroundColor = "#c0c0c0";
+      this.bottomright.style.position = "absolute";
+      this.bottomright.style.cursor = "nwse-resize";
 
-    this.bottomright.addEventListener("mousedown", (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.movestart = { x: e.clientX, y: e.clientY, pos: "br"};
-      this.origheight = this.height;
-      this.origwidth = this.width;
-      this.origtop = this.top;
-      this.origleft = this.left;
-      e.preventDefault();
-      e.stopPropagation();
-    });
+      this.bottomright.addEventListener("mousedown", (e) => {
+        if (e.button != 0) {
+          return;
+        }
+        this.movestart = { x: e.clientX, y: e.clientY, pos: "br"};
+        this.origheight = this.height;
+        this.origwidth = this.width;
+        this.origtop = this.top;
+        this.origleft = this.left;
+        e.preventDefault();
+        e.stopPropagation();
+      });
 
-    this.border.appendChild(this.bottomright);
+      this.border.appendChild(this.bottomright);
+    }
 
     this.topleft = document.createElement("div");
     this.topleft.style.top = "-5px";
@@ -135,7 +140,11 @@ class CcResizeComponent extends HTMLElement {
     this.topleft.style.border = "1px solid #808080";
     this.topleft.style.backgroundColor = "#c0c0c0";
     this.topleft.style.position = "absolute";
-    this.topleft.style.cursor = "nwse-resize";
+    if (!this.options.xyOnly) {
+      this.topleft.style.cursor = "nwse-resize";
+    } else {
+      this.topleft.style.cursor = "move";
+    }
 
     this.topleft.addEventListener("mousedown", (e) => {
       if (e.button != 0) {
@@ -152,155 +161,157 @@ class CcResizeComponent extends HTMLElement {
 
     this.border.appendChild(this.topleft);
 
-    this.topright = document.createElement("div");
-    this.topright.style.top = "-5px";
-    this.topright.style.right = "-5px";
-    this.topright.style.width = "10px";
-    this.topright.style.height = "10px";
-    this.topright.style.border = "1px solid #808080";
-    this.topright.style.backgroundColor = "#c0c0c0";
-    this.topright.style.position = "absolute";
-    this.topright.style.cursor = "nesw-resize";
+    if (!this.options.xyOnly) {
+      this.topright = document.createElement("div");
+      this.topright.style.top = "-5px";
+      this.topright.style.right = "-5px";
+      this.topright.style.width = "10px";
+      this.topright.style.height = "10px";
+      this.topright.style.border = "1px solid #808080";
+      this.topright.style.backgroundColor = "#c0c0c0";
+      this.topright.style.position = "absolute";
+      this.topright.style.cursor = "nesw-resize";
 
-    this.topright.addEventListener("mousedown", (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.movestart = { x: e.clientX, y: e.clientY, pos: "tr"};
-      this.origheight = this.height;
-      this.origwidth = this.width;
-      this.origtop = this.top;
-      this.origleft = this.left;
-      e.preventDefault();
-      e.stopPropagation();
-    });
+      this.topright.addEventListener("mousedown", (e) => {
+        if (e.button != 0) {
+          return;
+        }
+        this.movestart = { x: e.clientX, y: e.clientY, pos: "tr"};
+        this.origheight = this.height;
+        this.origwidth = this.width;
+        this.origtop = this.top;
+        this.origleft = this.left;
+        e.preventDefault();
+        e.stopPropagation();
+      });
 
-    this.border.appendChild(this.topright);
+      this.border.appendChild(this.topright);
 
-    this.bottomleft = document.createElement("div");
-    this.bottomleft.style.bottom = "-5px";
-    this.bottomleft.style.left = "-5px";
-    this.bottomleft.style.width = "10px";
-    this.bottomleft.style.height = "10px";
-    this.bottomleft.style.border = "1px solid #808080";
-    this.bottomleft.style.backgroundColor = "#c0c0c0";
-    this.bottomleft.style.position = "absolute";
-    this.bottomleft.style.cursor = "nesw-resize";
+      this.bottomleft = document.createElement("div");
+      this.bottomleft.style.bottom = "-5px";
+      this.bottomleft.style.left = "-5px";
+      this.bottomleft.style.width = "10px";
+      this.bottomleft.style.height = "10px";
+      this.bottomleft.style.border = "1px solid #808080";
+      this.bottomleft.style.backgroundColor = "#c0c0c0";
+      this.bottomleft.style.position = "absolute";
+      this.bottomleft.style.cursor = "nesw-resize";
 
-    this.bottomleft.addEventListener("mousedown", (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.movestart = { x: e.clientX, y: e.clientY, pos: "bl"};
-      this.origheight = this.height;
-      this.origwidth = this.width;
-      this.origtop = this.top;
-      this.origleft = this.left;
-      e.preventDefault();
-      e.stopPropagation();
-    });
+      this.bottomleft.addEventListener("mousedown", (e) => {
+        if (e.button != 0) {
+          return;
+        }
+        this.movestart = { x: e.clientX, y: e.clientY, pos: "bl"};
+        this.origheight = this.height;
+        this.origwidth = this.width;
+        this.origtop = this.top;
+        this.origleft = this.left;
+        e.preventDefault();
+        e.stopPropagation();
+      });
 
-    this.border.appendChild(this.bottomleft);
+      this.border.appendChild(this.bottomleft);
 
-    this.tophandle = document.createElement("div");
-    this.tophandle.style.top = "-5px";
-    this.tophandle.style.left = "calc(50% - 5px)";
-    this.tophandle.style.width = "10px";
-    this.tophandle.style.height = "10px";
-    this.tophandle.style.border = "1px solid #808080";
-    this.tophandle.style.backgroundColor = "#c0c0c0";
-    this.tophandle.style.position = "absolute";
-    this.tophandle.style.cursor = "ns-resize";
+      this.tophandle = document.createElement("div");
+      this.tophandle.style.top = "-5px";
+      this.tophandle.style.left = "calc(50% - 5px)";
+      this.tophandle.style.width = "10px";
+      this.tophandle.style.height = "10px";
+      this.tophandle.style.border = "1px solid #808080";
+      this.tophandle.style.backgroundColor = "#c0c0c0";
+      this.tophandle.style.position = "absolute";
+      this.tophandle.style.cursor = "ns-resize";
 
-    this.tophandle.addEventListener("mousedown", (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.movestart = { x: e.clientX, y: e.clientY, pos: "t"};
-      this.origheight = this.height;
-      this.origwidth = this.width;
-      this.origtop = this.top;
-      this.origleft = this.left;
-      e.preventDefault();
-      e.stopPropagation();
-    });
+      this.tophandle.addEventListener("mousedown", (e) => {
+        if (e.button != 0) {
+          return;
+        }
+        this.movestart = { x: e.clientX, y: e.clientY, pos: "t"};
+        this.origheight = this.height;
+        this.origwidth = this.width;
+        this.origtop = this.top;
+        this.origleft = this.left;
+        e.preventDefault();
+        e.stopPropagation();
+      });
 
-    this.border.appendChild(this.tophandle);
+      this.border.appendChild(this.tophandle);
 
-    this.lefthandle = document.createElement("div");
-    this.lefthandle.style.top = "calc(50% - 5px)";
-    this.lefthandle.style.left = "-5px";
-    this.lefthandle.style.width = "10px";
-    this.lefthandle.style.height = "10px";
-    this.lefthandle.style.border = "1px solid #808080";
-    this.lefthandle.style.backgroundColor = "#c0c0c0";
-    this.lefthandle.style.position = "absolute";
-    this.lefthandle.style.cursor = "ew-resize";
+      this.lefthandle = document.createElement("div");
+      this.lefthandle.style.top = "calc(50% - 5px)";
+      this.lefthandle.style.left = "-5px";
+      this.lefthandle.style.width = "10px";
+      this.lefthandle.style.height = "10px";
+      this.lefthandle.style.border = "1px solid #808080";
+      this.lefthandle.style.backgroundColor = "#c0c0c0";
+      this.lefthandle.style.position = "absolute";
+      this.lefthandle.style.cursor = "ew-resize";
 
-    this.lefthandle.addEventListener("mousedown", (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.movestart = { x: e.clientX, y: e.clientY, pos: "l"};
-      this.origheight = this.height;
-      this.origwidth = this.width;
-      this.origtop = this.top;
-      this.origleft = this.left;
-      e.preventDefault();
-      e.stopPropagation();
-    });
+      this.lefthandle.addEventListener("mousedown", (e) => {
+        if (e.button != 0) {
+          return;
+        }
+        this.movestart = { x: e.clientX, y: e.clientY, pos: "l"};
+        this.origheight = this.height;
+        this.origwidth = this.width;
+        this.origtop = this.top;
+        this.origleft = this.left;
+        e.preventDefault();
+        e.stopPropagation();
+      });
 
-    this.border.appendChild(this.lefthandle);
+      this.border.appendChild(this.lefthandle);
 
 
-    this.bottomhandle = document.createElement("div");
-    this.bottomhandle.style.bottom = "-5px";
-    this.bottomhandle.style.left = "calc(50% - 5px)";
-    this.bottomhandle.style.width = "10px";
-    this.bottomhandle.style.height = "10px";
-    this.bottomhandle.style.border = "1px solid #808080";
-    this.bottomhandle.style.backgroundColor = "#c0c0c0";
-    this.bottomhandle.style.position = "absolute";
-    this.bottomhandle.style.cursor = "ns-resize";
+      this.bottomhandle = document.createElement("div");
+      this.bottomhandle.style.bottom = "-5px";
+      this.bottomhandle.style.left = "calc(50% - 5px)";
+      this.bottomhandle.style.width = "10px";
+      this.bottomhandle.style.height = "10px";
+      this.bottomhandle.style.border = "1px solid #808080";
+      this.bottomhandle.style.backgroundColor = "#c0c0c0";
+      this.bottomhandle.style.position = "absolute";
+      this.bottomhandle.style.cursor = "ns-resize";
 
-    this.bottomhandle.addEventListener("mousedown", (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.movestart = { x: e.clientX, y: e.clientY, pos: "b"};
-      this.origheight = this.height;
-      this.origwidth = this.width;
-      this.origtop = this.top;
-      this.origleft = this.left;
-      e.preventDefault();
-      e.stopPropagation();
-    });
+      this.bottomhandle.addEventListener("mousedown", (e) => {
+        if (e.button != 0) {
+          return;
+        }
+        this.movestart = { x: e.clientX, y: e.clientY, pos: "b"};
+        this.origheight = this.height;
+        this.origwidth = this.width;
+        this.origtop = this.top;
+        this.origleft = this.left;
+        e.preventDefault();
+        e.stopPropagation();
+      });
 
-    this.border.appendChild(this.bottomhandle);
+      this.border.appendChild(this.bottomhandle);
 
-    this.righthandle = document.createElement("div");
-    this.righthandle.style.top = "calc(50% - 5px)";
-    this.righthandle.style.right = "-5px";
-    this.righthandle.style.width = "10px";
-    this.righthandle.style.height = "10px";
-    this.righthandle.style.border = "1px solid #808080";
-    this.righthandle.style.backgroundColor = "#c0c0c0";
-    this.righthandle.style.position = "absolute";
-    this.righthandle.style.cursor = "ew-resize";
-    this.righthandle.addEventListener("mousedown", (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.movestart = { x: e.clientX, y: e.clientY, pos: "r"};
-      this.origheight = this.height;
-      this.origwidth = this.width;
-      this.origtop = this.top;
-      this.origleft = this.left;
-      e.preventDefault();
-      e.stopPropagation();
-    });
+      this.righthandle = document.createElement("div");
+      this.righthandle.style.top = "calc(50% - 5px)";
+      this.righthandle.style.right = "-5px";
+      this.righthandle.style.width = "10px";
+      this.righthandle.style.height = "10px";
+      this.righthandle.style.border = "1px solid #808080";
+      this.righthandle.style.backgroundColor = "#c0c0c0";
+      this.righthandle.style.position = "absolute";
+      this.righthandle.style.cursor = "ew-resize";
+      this.righthandle.addEventListener("mousedown", (e) => {
+        if (e.button != 0) {
+          return;
+        }
+        this.movestart = { x: e.clientX, y: e.clientY, pos: "r"};
+        this.origheight = this.height;
+        this.origwidth = this.width;
+        this.origtop = this.top;
+        this.origleft = this.left;
+        e.preventDefault();
+        e.stopPropagation();
+      });
 
-    this.border.appendChild(this.righthandle);
+      this.border.appendChild(this.righthandle);
+    }
   }
 
   disconnectedCallback() {
@@ -383,33 +394,35 @@ class CcResizeComponent extends HTMLElement {
             }
           }
 
-          this.height = this.origheight - (this.top - this.origtop);
-          if (this.height < 0) {
-            this.height = 0;
-          }
-          this.width = this.origwidth - (this.left - this.origleft);
-          if (this.width < 0) {
-            this.width = 0;
-          }
+          if (!this.options.xyOnly) {
+            this.height = this.origheight - (this.top - this.origtop);
+            if (this.height < 0) {
+              this.height = 0;
+            }
+            this.width = this.origwidth - (this.left - this.origleft);
+            if (this.width < 0) {
+              this.width = 0;
+            }
 
-          if (this.maxscreen) {
-            var z1 = this.maxscreen.width - this.width;
-            if (this.left > z1 + this.componentOffsetLeft) {
-              this.left = z1 + this.componentOffsetLeft;
-              this.width = this.origwidth - (this.left - this.origleft);
-              if (this.width < 0) {
-                this.width = 0;
+            if (this.maxscreen) {
+              var z1 = this.maxscreen.width - this.width;
+              if (this.left > z1 + this.componentOffsetLeft) {
+                this.left = z1 + this.componentOffsetLeft;
+                this.width = this.origwidth - (this.left - this.origleft);
+                if (this.width < 0) {
+                  this.width = 0;
+                }
               }
             }
-          }
 
-          if (this.maxscreen) {
-            var z1 = this.maxscreen.height - this.height;
-            if (this.top > z1 + this.componentOffsetTop) {
-              this.top = z1 + this.componentOffsetTop;
-              this.height = this.origheight - (this.top - this.origtop);
-              if (this.height < 0) {
-                this.height = 0;
+            if (this.maxscreen) {
+              var z1 = this.maxscreen.height - this.height;
+              if (this.top > z1 + this.componentOffsetTop) {
+                this.top = z1 + this.componentOffsetTop;
+                this.height = this.origheight - (this.top - this.origtop);
+                if (this.height < 0) {
+                  this.height = 0;
+                }
               }
             }
           }
