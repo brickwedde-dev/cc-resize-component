@@ -101,6 +101,32 @@ class CcResizeComponent extends HTMLElement {
       this.origwidth = this.width;
       this.origtop = this.top;
       this.origleft = this.left;
+      if (this.options.hideOnMove) {
+        if (this.bottomleft) {
+          this.bottomleft.style.display = "none";
+        }
+        if (this.bottomright) {
+          this.bottomright.style.display = "none";
+        }
+        if (this.topright) {
+          this.topright.style.display = "none";
+        }
+        if (this.topleft) {
+          this.topleft.style.display = "none";
+        }
+        if (this.bottomhandle) {
+          this.bottomhandle.style.display = "none";
+        }
+        if (this.righthandle) {
+          this.righthandle.style.display = "none";
+        }
+        if (this.lefthandle) {
+          this.lefthandle.style.display = "none";
+        }
+        if (this.tophandle) {
+          this.tophandle.style.display = "none";
+        }
+      }
       e.preventDefault();
       e.stopPropagation();
     });
@@ -125,6 +151,21 @@ class CcResizeComponent extends HTMLElement {
         this.origwidth = this.width;
         this.origtop = this.top;
         this.origleft = this.left;
+        if (this.options.hideOnMove) {
+          this.bottomright.style.display = "none";
+          if (this.bottomleft) {
+            this.bottomleft.style.display = "none";
+          }
+          if (this.topright) {
+            this.topright.style.display = "none";
+          }
+          if (this.bottomhandle) {
+            this.bottomhandle.style.display = "none";
+          }
+          if (this.righthandle) {
+            this.righthandle.style.display = "none";
+          }
+        }
         e.preventDefault();
         e.stopPropagation();
       });
@@ -155,6 +196,21 @@ class CcResizeComponent extends HTMLElement {
       this.origwidth = this.width;
       this.origtop = this.top;
       this.origleft = this.left;
+      if (this.options.hideOnMove) {
+        this.topleft.style.display = "none";
+        if (this.bottomleft) {
+          this.bottomleft.style.display = "none";
+        }
+        if (this.topright) {
+          this.topright.style.display = "none";
+        }
+        if (this.tophandle) {
+          this.tophandle.style.display = "none";
+        }
+        if (this.lefthandle) {
+          this.lefthandle.style.display = "none";
+        }
+      }
       e.preventDefault();
       e.stopPropagation();
     });
@@ -181,6 +237,21 @@ class CcResizeComponent extends HTMLElement {
         this.origwidth = this.width;
         this.origtop = this.top;
         this.origleft = this.left;
+        if (this.options.hideOnMove) {
+          this.topright.style.display = "none";
+          if (this.bottomright) {
+            this.bottomright.style.display = "none";
+          }
+          if (this.topleft) {
+            this.topleft.style.display = "none";
+          }
+          if (this.tophandle) {
+            this.tophandle.style.display = "none";
+          }
+          if (this.righthandle) {
+            this.righthandle.style.display = "none";
+          }
+        }
         e.preventDefault();
         e.stopPropagation();
       });
@@ -206,6 +277,21 @@ class CcResizeComponent extends HTMLElement {
         this.origwidth = this.width;
         this.origtop = this.top;
         this.origleft = this.left;
+        if (this.options.hideOnMove) {
+          this.bottomleft.style.display = "none";
+          if (this.bottomright) {
+            this.bottomright.style.display = "none";
+          }
+          if (this.topleft) {
+            this.topleft.style.display = "none";
+          }
+          if (this.bottomhandle) {
+            this.bottomhandle.style.display = "none";
+          }
+          if (this.lefthandle) {
+            this.lefthandle.style.display = "none";
+          }
+        }
         e.preventDefault();
         e.stopPropagation();
       });
@@ -231,6 +317,15 @@ class CcResizeComponent extends HTMLElement {
         this.origwidth = this.width;
         this.origtop = this.top;
         this.origleft = this.left;
+        if (this.options.hideOnMove) {
+          this.tophandle.style.display = "none";
+          if (this.topright) {
+            this.topright.style.display = "none";
+          }
+          if (this.topleft) {
+            this.topleft.style.display = "none";
+          }
+        }
         e.preventDefault();
         e.stopPropagation();
       });
@@ -256,6 +351,15 @@ class CcResizeComponent extends HTMLElement {
         this.origwidth = this.width;
         this.origtop = this.top;
         this.origleft = this.left;
+        if (this.options.hideOnMove) {
+          this.lefthandle.style.display = "none";
+          if (this.bottomleft) {
+            this.bottomleft.style.display = "none";
+          }
+          if (this.topleft) {
+            this.topleft.style.display = "none";
+          }
+        }
         e.preventDefault();
         e.stopPropagation();
       });
@@ -282,6 +386,15 @@ class CcResizeComponent extends HTMLElement {
         this.origwidth = this.width;
         this.origtop = this.top;
         this.origleft = this.left;
+        if (this.options.hideOnMove) {
+          this.bottomhandle.style.display = "none";
+          if (this.bottomleft) {
+            this.bottomleft.style.display = "none";
+          }
+          if (this.bottomright) {
+            this.bottomright.style.display = "none";
+          }
+        }
         e.preventDefault();
         e.stopPropagation();
       });
@@ -306,6 +419,15 @@ class CcResizeComponent extends HTMLElement {
         this.origwidth = this.width;
         this.origtop = this.top;
         this.origleft = this.left;
+        if (this.options.hideOnMove) {
+          this.righthandle.style.display = "none";
+          if (this.topright) {
+            this.topright.style.display = "none";
+          }
+          if (this.bottomright) {
+            this.bottomright.style.display = "none";
+          }
+        }
         e.preventDefault();
         e.stopPropagation();
       });
@@ -322,6 +444,32 @@ class CcResizeComponent extends HTMLElement {
   mouseup (e) {
     if (e.button != 0) {
       return;
+    }
+    if (this.options.hideOnMove) {
+      if (this.bottomleft) {
+        this.bottomleft.style.display = "";
+      }
+      if (this.bottomright) {
+        this.bottomright.style.display = "";
+      }
+      if (this.topright) {
+        this.topright.style.display = "";
+      }
+      if (this.topleft) {
+        this.topleft.style.display = "";
+      }
+      if (this.bottomhandle) {
+        this.bottomhandle.style.display = "";
+      }
+      if (this.righthandle) {
+        this.righthandle.style.display = "";
+      }
+      if (this.lefthandle) {
+        this.lefthandle.style.display = "";
+      }
+      if (this.tophandle) {
+        this.tophandle.style.display = "";
+      }
     }
     if (this.movestart) {
       this.dispatchEvent(new CustomEvent("finished", {detail: {}}));
