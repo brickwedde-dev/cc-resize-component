@@ -73,6 +73,14 @@ class CcResizeComponent extends HTMLElement {
       });
     }
 
+    this.drawControls();
+  }
+
+  drawControls() {
+    if (this.border) {
+      this.border.parentElement.removeChild(this.border);
+      this.border = null;
+    }
     this.border = document.createElement("div");
     this.border.style.border = "1px dashed red";
     this.border.style.position = "absolute";
@@ -131,6 +139,10 @@ class CcResizeComponent extends HTMLElement {
       e.stopPropagation();
     });
 
+    if (this.bottomright) {
+      this.bottomright.parentElement.removeChild(this.bottomright);
+      this.bottomright = null;
+    }
     if (!this.options.xyOnly) {
       this.bottomright = document.createElement("div");
       this.bottomright.style.bottom = "-5px";
@@ -173,51 +185,62 @@ class CcResizeComponent extends HTMLElement {
       this.border.appendChild(this.bottomright);
     }
 
-    this.topleft = document.createElement("div");
-    this.topleft.style.top = "-5px";
-    this.topleft.style.left = "-5px";
-    this.topleft.style.width = "10px";
-    this.topleft.style.height = "10px";
-    this.topleft.style.border = "1px solid #808080";
-    this.topleft.style.backgroundColor = "#c0c0c0";
-    this.topleft.style.position = "absolute";
-    if (!this.options.xyOnly) {
-      this.topleft.style.cursor = "nwse-resize";
-    } else {
-      this.topleft.style.cursor = "move";
+    if (this.topleft) {
+      this.topleft.parentElement.removeChild(this.topleft);
+      this.topleft = null;
+    }
+    if (!this.options.xyOnly || (!this.options.alignRight && !this.options.alignCenter)) {
+      this.topleft = document.createElement("div");
+      this.topleft.style.top = "-5px";
+      this.topleft.style.left = "-5px";
+      this.topleft.style.width = "10px";
+      this.topleft.style.height = "10px";
+      this.topleft.style.border = "1px solid #808080";
+      this.topleft.style.backgroundColor = "#c0c0c0";
+      this.topleft.style.position = "absolute";
+      if (!this.options.xyOnly) {
+        this.topleft.style.cursor = "nwse-resize";
+      } else {
+        this.topleft.style.cursor = "move";
+      }
+
+      this.topleft.addEventListener("mousedown", (e) => {
+        if (e.button != 0) {
+          return;
+        }
+        this.movestart = { x: e.clientX, y: e.clientY, pos: "tl"};
+        this.origheight = this.height;
+        this.origwidth = this.width;
+        this.origtop = this.top;
+        this.origleft = this.left;
+        if (this.options.hideOnMove) {
+          this.topleft.style.display = "none";
+          if (this.bottomleft) {
+            this.bottomleft.style.display = "none";
+          }
+          if (this.topright) {
+            this.topright.style.display = "none";
+          }
+          if (this.tophandle) {
+            this.tophandle.style.display = "none";
+          }
+          if (this.lefthandle) {
+            this.lefthandle.style.display = "none";
+          }
+        }
+        e.preventDefault();
+        e.stopPropagation();
+      });
+
+      this.border.appendChild(this.topleft);
     }
 
-    this.topleft.addEventListener("mousedown", (e) => {
-      if (e.button != 0) {
-        return;
-      }
-      this.movestart = { x: e.clientX, y: e.clientY, pos: "tl"};
-      this.origheight = this.height;
-      this.origwidth = this.width;
-      this.origtop = this.top;
-      this.origleft = this.left;
-      if (this.options.hideOnMove) {
-        this.topleft.style.display = "none";
-        if (this.bottomleft) {
-          this.bottomleft.style.display = "none";
-        }
-        if (this.topright) {
-          this.topright.style.display = "none";
-        }
-        if (this.tophandle) {
-          this.tophandle.style.display = "none";
-        }
-        if (this.lefthandle) {
-          this.lefthandle.style.display = "none";
-        }
-      }
-      e.preventDefault();
-      e.stopPropagation();
-    });
 
-    this.border.appendChild(this.topleft);
-
-    if (!this.options.xyOnly) {
+    if (this.topright) {
+      this.topright.parentElement.removeChild(this.topright);
+      this.topright = null;
+    }
+    if (!this.options.xyOnly || this.options.alignRight) {
       this.topright = document.createElement("div");
       this.topright.style.top = "-5px";
       this.topright.style.right = "-5px";
@@ -226,7 +249,11 @@ class CcResizeComponent extends HTMLElement {
       this.topright.style.border = "1px solid #808080";
       this.topright.style.backgroundColor = "#c0c0c0";
       this.topright.style.position = "absolute";
-      this.topright.style.cursor = "nesw-resize";
+      if (this.options.xyOnly) {
+        this.topright.style.cursor = "move";
+      } else {
+        this.topright.style.cursor = "nesw-resize";
+      }
 
       this.topright.addEventListener("mousedown", (e) => {
         if (e.button != 0) {
@@ -257,7 +284,13 @@ class CcResizeComponent extends HTMLElement {
       });
 
       this.border.appendChild(this.topright);
+    }
 
+    if (this.bottomleft) {
+      this.bottomleft.parentElement.removeChild(this.bottomleft);
+      this.bottomleft = null;
+    }
+    if (!this.options.xyOnly) {
       this.bottomleft = document.createElement("div");
       this.bottomleft.style.bottom = "-5px";
       this.bottomleft.style.left = "-5px";
@@ -297,7 +330,13 @@ class CcResizeComponent extends HTMLElement {
       });
 
       this.border.appendChild(this.bottomleft);
+    }
 
+    if (this.tophandle) {
+      this.tophandle.parentElement.removeChild(this.tophandle);
+      this.tophandle = null;
+    }
+    if (!this.options.xyOnly || this.options.alignCenter) {
       this.tophandle = document.createElement("div");
       this.tophandle.style.top = "-5px";
       this.tophandle.style.left = "calc(50% - 5px)";
@@ -306,7 +345,11 @@ class CcResizeComponent extends HTMLElement {
       this.tophandle.style.border = "1px solid #808080";
       this.tophandle.style.backgroundColor = "#c0c0c0";
       this.tophandle.style.position = "absolute";
-      this.tophandle.style.cursor = "ns-resize";
+      if (this.options.xyOnly) {
+        this.tophandle.style.cursor = "move";
+      } else {
+        this.tophandle.style.cursor = "ns-resize";
+      }
 
       this.tophandle.addEventListener("mousedown", (e) => {
         if (e.button != 0) {
@@ -331,7 +374,21 @@ class CcResizeComponent extends HTMLElement {
       });
 
       this.border.appendChild(this.tophandle);
+    }
 
+    if (this.lefthandle) {
+      this.lefthandle.parentElement.removeChild(this.lefthandle);
+      this.lefthandle = null;
+    }
+    if (this.bottomhandle) {
+      this.bottomhandle.parentElement.removeChild(this.bottomhandle);
+      this.bottomhandle = null;
+    }
+    if (this.righthandle) {
+      this.righthandle.parentElement.removeChild(this.righthandle);
+      this.righthandle = null;
+    }
+    if (!this.options.xyOnly) {
       this.lefthandle = document.createElement("div");
       this.lefthandle.style.top = "calc(50% - 5px)";
       this.lefthandle.style.left = "-5px";
@@ -577,25 +634,36 @@ class CcResizeComponent extends HTMLElement {
           break;
 
         case "t":
-          this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
-          if (this.maxscreen) {
-            if (this.top < this.componentOffsetTop) {
-              this.top = this.componentOffsetTop;
+          if (this.options.xyOnly && this.options.alignCenter) {
+            this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
+            this.left = rasterize(this.origleft + (e.clientX - this.movestart.x), this.raster.x, 0 - (this.componentOffsetLeft - this.width / 2));
+
+            if (this.maxscreen) {
+              if (this.top < this.componentOffsetTop) {
+                this.top = this.componentOffsetTop;
+              }
             }
-          }
+          } else {
+            this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
+            if (this.maxscreen) {
+              if (this.top < this.componentOffsetTop) {
+                this.top = this.componentOffsetTop;
+              }
+            }
 
-          this.height = this.origheight - (this.top - this.origtop);
-          if (this.height < 0) {
-            this.height = 0;
-          }
+            this.height = this.origheight - (this.top - this.origtop);
+            if (this.height < 0) {
+              this.height = 0;
+            }
 
-          if (this.maxscreen) {
-            var z1 = this.maxscreen.height - this.height;
-            if (this.top > z1 + this.componentOffsetTop) {
-              this.top = z1 + this.componentOffsetTop;
-              this.height = this.origheight - (this.top - this.origtop);
-              if (this.height < 0) {
-                this.height = 0;
+            if (this.maxscreen) {
+              var z1 = this.maxscreen.height - this.height;
+              if (this.top > z1 + this.componentOffsetTop) {
+                this.top = z1 + this.componentOffsetTop;
+                this.height = this.origheight - (this.top - this.origtop);
+                if (this.height < 0) {
+                  this.height = 0;
+                }
               }
             }
           }
@@ -623,35 +691,52 @@ class CcResizeComponent extends HTMLElement {
           }
           break;
         case "tr":
-          this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
-          if (this.maxscreen) {
-            if (this.top < this.componentOffsetTop) {
-              this.top = this.componentOffsetTop;
-            }
-          }
-          this.height = this.origheight - (this.top - this.origtop);
-          if (this.height < 0) {
-            this.height = 0;
-          }
-          if (this.maxscreen) {
-            var z1 = this.maxscreen.height - this.height;
-            if (this.top > z1 + this.componentOffsetTop) {
-              this.top = z1 + this.componentOffsetTop;
-              this.height = this.origheight - (this.top - this.origtop);
-              if (this.height < 0) {
-                this.height = 0;
+          if (this.options.xyOnly && this.options.alignRight) {
+            this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
+            this.left = rasterize(this.origleft + (e.clientX - this.movestart.x), this.raster.x, 0 - (this.componentOffsetLeft - this.width));
+
+            if (this.maxscreen) {
+              if (this.left > this.maxscreen.width) {
+                this.left = this.maxscreen.width;
               }
             }
-          }
-          this.width = rasterize(this.origwidth + (e.clientX - this.movestart.x), this.raster.x, this.left - this.componentOffsetLeft);
-          if (this.maxscreen) {
-            var z1 = this.maxscreen.width - this.left;
-            if (this.width > z1 + this.componentOffsetLeft) {
-              this.width = z1 + this.componentOffsetLeft;
+
+            if (this.maxscreen) {
+              if (this.top < this.componentOffsetTop) {
+                this.top = this.componentOffsetTop;
+              }
             }
-          }
-          if (this.width < 0) {
-            this.width = 0;
+          } else {
+            this.top = rasterize(this.origtop + (e.clientY - this.movestart.y), this.raster.y, 0 - this.componentOffsetTop);
+            if (this.maxscreen) {
+              if (this.top < this.componentOffsetTop) {
+                this.top = this.componentOffsetTop;
+              }
+            }
+            this.height = this.origheight - (this.top - this.origtop);
+            if (this.height < 0) {
+              this.height = 0;
+            }
+            if (this.maxscreen) {
+              var z1 = this.maxscreen.height - this.height;
+              if (this.top > z1 + this.componentOffsetTop) {
+                this.top = z1 + this.componentOffsetTop;
+                this.height = this.origheight - (this.top - this.origtop);
+                if (this.height < 0) {
+                  this.height = 0;
+                }
+              }
+            }
+            this.width = rasterize(this.origwidth + (e.clientX - this.movestart.x), this.raster.x, this.left - this.componentOffsetLeft);
+            if (this.maxscreen) {
+              var z1 = this.maxscreen.width - this.left;
+              if (this.width > z1 + this.componentOffsetLeft) {
+                this.width = z1 + this.componentOffsetLeft;
+              }
+            }
+            if (this.width < 0) {
+              this.width = 0;
+            }
           }
           break;
         case "bl":
